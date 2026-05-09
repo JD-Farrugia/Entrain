@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Entrain</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:         #09090e;
+      --surface:    #111118;
+      --surface-2:  #1a1a24;
+      --surface-3:  #22222e;
+      --border:     rgba(255,255,255,0.07);
+      --border-mid: rgba(255,255,255,0.13);
+      --text:       #f0f0f8;
+      --text-2:     #7878a0;
+      --text-3:     #38385a;
+      --accent:     #f59e0b;
+      --accent-dim: rgba(245,158,11,0.12);
+      --accent-glow:rgba(245,158,11,0.20);
+      --red:        #ef4444;
+    }
+
+    html, body { background: var(--bg); }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 400;
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .app {
+      min-height: 100vh;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-bottom: 80px;
+    }
+
+    /* ── Header ── */
+    .header {
+      width: 100%;
+      max-width: 520px;
+      padding: 40px 20px 28px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+
+    .wordmark {
+      font-size: 36px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .wordmark span {
+      color: var(--accent);
+    }
+
+    .lib-count {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      padding: 5px 10px;
+      border-radius: 999px;
+    }
+
+    /* ── Main ── */
+    .main {
+      width: 100%;
+      max-width: 520px;
+      padding: 0 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    /* ── Section label ── */
+    .label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin-bottom: 10px;
+    }
+
+    /* ── Dropdowns ── */
+    .dropdowns {
+      display: flex;
+      gap: 8px;
+    }
+
+    .dropdown-wrap {
+      flex: 1;
+      position: relative;
+    }
+
+    .dropdown-btn {
+      width: 100%;
+      padding: 11px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-2);
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .dropdown-btn:hover { border-color: var(--border-mid); color: var(--text); }
+    .dropdown-btn.has-selection { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+
+    .dropdown-count {
+      background: var(--accent);
+      color: #09090e;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      font-size: 9px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      background: var(--surface-2);
+      border: 1px solid var(--border-mid);
+      border-radius: 14px;
+      padding: 10px;
+      z-index: 50;
+      display: none;
+      flex-wrap: wrap;
+      gap: 6px;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.6);
+      min-width: 200px;
+    }
+
+    .dropdown-wrap.open .dropdown-menu { display: flex; }
+    .dropdown-wrap.open .dropdown-btn { border-color: var(--border-mid); }
+
+    /* ── Chips ── */
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .chip {
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-2);
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .chip:hover { border-color: var(--border-mid); color: var(--text); }
+    .chip.active {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-dim);
+    }
+
+    /* ── Prompt ── */
+    .prompt-wrap {
+      display: flex;
+      align-items: center;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 4px 4px 4px 16px;
+      transition: border-color 0.2s;
+    }
+    .prompt-wrap:focus-within { border-color: var(--border-mid); }
+
+    .prompt-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      font-family: 'Outfit', sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--text);
+      padding: 10px 0;
+    }
+    .prompt-input::placeholder { color: var(--text-3); }
+
+    .prompt-clear {
+      background: transparent;
+      border: none;
+      color: var(--text-3);
+      font-size: 18px;
+      cursor: pointer;
+      padding: 8px 10px;
+      line-height: 1;
+      transition: color 0.15s;
+    }
+    .prompt-clear:hover { color: var(--text-2); }
+
+    /* ── Actions ── */
+    .actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 14px;
+      border-radius: 12px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.01em;
+    }
+    .btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    .btn-ghost {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-2);
+    }
+    .btn-ghost:hover:not(:disabled) { border-color: var(--border-mid); color: var(--text); }
+
+    .btn-primary {
+      background: var(--accent);
+      border: none;
+      color: #0a0a0f;
+    }
+    .btn-primary:hover:not(:disabled) {
+      background: #fbbf24;
+      box-shadow: 0 0 24px var(--accent-glow);
+    }
+
+    /* ── Loading ── */
+    .loading {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--text-3);
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      padding: 8px 0;
+    }
+
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--surface-3);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Error ── */
+    .error {
+      font-size: 12px;
+      color: var(--red);
+      background: rgba(239,68,68,0.08);
+      border: 1px solid rgba(239,68,68,0.2);
+      border-radius: 10px;
+      padding: 12px 14px;
+      word-break: break-word;
+    }
+
+    /* ── Result Card ── */
+    .result-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      animation: slideUp 0.35s cubic-bezier(0.16,1,0.3,1) forwards;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .result-art-wrap {
+      width: 100%;
+      aspect-ratio: 1;
+      background: var(--surface-2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .result-art {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .result-art-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 64px;
+      opacity: 0.15;
+    }
+
+    .result-mode-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(9,9,14,0.75);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-2);
+    }
+
+    .result-body {
+      padding: 20px;
+    }
+
+    .result-artist {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+
+    .result-album {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+      margin-bottom: 14px;
+    }
+
+    .result-explanation {
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1.6;
+      color: var(--text-2);
+      margin-bottom: 18px;
+    }
+
+    .result-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+
+    .result-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-2);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .result-btn:hover:not(:disabled) { border-color: var(--border-mid); color: var(--text); }
+    .result-btn.danger:hover { border-color: rgba(239,68,68,0.4); color: var(--red); }
+    .result-btn.accent { border-color: var(--accent); color: var(--accent); }
+    .result-btn.accent:hover { background: var(--accent-dim); }
+    .result-btn.muted { color: var(--text-3); border-color: transparent; }
+    .result-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    /* ── Edit Panel ── */
+    .edit-panel {
+      margin-top: 16px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      animation: slideUp 0.25s ease forwards;
+    }
+
+    .edit-field label {
+      display: block;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin-bottom: 6px;
+    }
+
+    .edit-input {
+      width: 100%;
+      background: var(--surface-3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 12px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .edit-input:focus { border-color: var(--border-mid); }
+
+    .edit-preview {
+      width: 72px;
+      height: 72px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .edit-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .edit-save {
+      flex: 1;
+      padding: 9px;
+      background: var(--accent);
+      border: none;
+      border-radius: 8px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: #09090e;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .edit-save:hover { background: #fbbf24; }
+
+    .edit-cancel {
+      padding: 9px 16px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      color: var(--text-2);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .edit-cancel:hover { border-color: var(--border-mid); }
+
+    .edit-confirm {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--accent);
+    }
+
+    /* ── Divider sections ── */
+    .section {
+      padding-top: 28px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── Add album ── */
+    .add-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 4px 4px 4px 14px;
+      transition: border-color 0.2s;
+    }
+    .add-row:focus-within { border-color: var(--border-mid); }
+
+    .add-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      font-family: 'Outfit', sans-serif;
+      font-size: 14px;
+      color: var(--text);
+      padding: 9px 0;
+    }
+    .add-input::placeholder { color: var(--text-3); }
+
+    .add-btn {
+      padding: 8px 16px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-2);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .add-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+    .add-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    .confirm-msg {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--accent);
+      margin-top: 8px;
+    }
+
+    /* ── Download btn ── */
+    .download-btn {
+      width: 100%;
+      padding: 12px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-2);
+      cursor: pointer;
+      transition: all 0.15s;
+      margin-top: 10px;
+      text-align: center;
+    }
+    .download-btn:hover { border-color: var(--border-mid); color: var(--text); }
+
+    /* ── Upload zone ── */
+    .upload-zone {
+      background: var(--surface);
+      border: 1px dashed var(--border-mid);
+      border-radius: 14px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+    .upload-zone:hover { border-color: var(--accent); background: var(--accent-dim); }
+
+    .upload-icon { font-size: 28px; opacity: 0.25; }
+
+    .upload-text {
+      font-size: 13px;
+      color: var(--text-2);
+    }
+
+    .upload-count {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    /* ── API key input ── */
+    .key-input {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+      letter-spacing: 0.06em;
+    }
+    .key-input:focus { border-color: var(--border-mid); }
+
+    /* ── Loading screen ── */
+    .loading-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+      background: var(--bg);
+    }
+
+    .loading-wordmark {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text-3);
+    }
+
+    .loading-wordmark span { color: var(--accent); opacity: 0.5; }
+
+    .loading-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .loading-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      opacity: 0.3;
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+    .loading-dot:nth-child(2) { animation-delay: 0.2s; }
+    .loading-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.3; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.3); }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useRef } = React;
+
+    const GENRES = ["Jazz", "Hip-Hop", "Soul/R&B", "Funk", "Indie", "Folk", "Rock", "Reggae/Ska", "Electronic", "World", "Brass"];
+    const MOODS = ["Mellow", "Energetic", "Dark", "Uplifting", "Melancholic", "Focused", "Dreamy", "Late Night", "Feel Good", "Intense"];
+
+    const GENRE_TAGS = {
+      "Jazz": ["Miles Davis","Coltrane","Chet Baker","Hank Mobley","Lee Morgan","Freddie Hubbard","Dexter Gordon","Art Blakey","Cannonball","Kenny Dorham","Clifford Brown","Duke Ellington","Charles Mingus","Sonny Rollins","Dave Brubeck","Wynton Marsalis","Donald Byrd","Lou Donaldson","Takuya Kuroda","Yussef","GoGo Penguin","Makaya","Avishai Cohen","Matthew Halsall","Nubya Garcia","Kokoroko","Ezra Collective","Shabaka","Sons Of Kemet","Tony Allen","Josh Lawrence","Julian Lage","Nérija","Get The Blessing","Omer Avital","Erik Truffaz","Ibrahim Maalouf","R+R=NOW","Kamasi Washington","Chief Adjuah","Dr. Lonnie Smith","Menahan Street Band","El Michels","Sure Fire Soul","Budos Band","Olympians","Ikebe Shakedown","Surprise Chef","Underground Canopy","Bluestaeb","New Cool Collective","Slavic Soul","Jungle By Night","Jungle Fire","Lack Of Afro","Charlie Hunter","EMEFE","Ariya Astrobeat","Souljazz Orchestra","Cochemea","Jack Kerouac"],
+      "Hip-Hop": ["Kendrick","Nas","Outkast","Common","Talib Kweli","Gang Starr","MF DOOM","Freddie Gibbs","Madlib","Black Star","Czarface","Jurassic 5","Pharcyde","Cordae","D Smoke","Snoop Dogg","Dr. Dre","2Pac","Ja Rule","Xzibit","Redman","Cypress Hill","Warren G","Nate Dogg","Wu-Tang","Ghostface","Slick Rick","NxWorries","Anderson .Paak","BADBADNOTGOOD","Alchemist","Doechii","Swamp Money"],
+      "Soul/R&B": ["Parcels","Leon Bridges","Sharon Jones","Dap-Kings","Otis Redding","Sam Cooke","Ray Charles","Baby Rose","Thee Sacred Souls","Thee Heart Tones","Childish Gambino","Frank Ocean","Alex Isley","Moonchild","Dear Silas","Swamp Money","Tom Misch"],
+      "Funk": ["Parcels","Ikebe Shakedown","Sure Fire Soul","Budos Band","Menahan Street Band","El Michels","Olympians","Dip","EMEFE","Jungle Fire","Lack Of Afro","Charlie Hunter","Swamp Money","Sharon Jones","Dap-Kings","Anderson .Paak"],
+      "Indie": ["Bon Iver","Fleet Foxes","Arcade Fire","Vampire Weekend","Tame Impala","Foals","The National","Local Natives","Bombay Bicycle Club","Two Door Cinema Club","Alt-J","Modest Mouse","The Shins","Cold War Kids","Radiohead","Editors","The Strokes","Arctic Monkeys","Last Shadow Puppets","Beirut","The Walkmen","Geese","Father John Misty","Kevin Morby","Cataldo","Maps & Atlases","Adult Jazz","Dirty Projectors","Punch Brothers","Andrew Bird","Palace","Broken Bells","Homer","Cameron Winter","Sheep Dog Wolf","Dan Auerbach","Michael Nau","Benjamin Booker","Eyes to Argus","Stalko","Counting Crows","The Killers","The Kooks","Gomez","Flea","Tom Misch","Les Imprimés","Herrimin","PLAYGRXVND","Fazer","Venna"],
+      "Folk": ["Iron & Wine","Fleet Foxes","Felice Brothers","Paul Simon","Kevin Morby","Andrew Bird","The Head And The Heart","Jack Johnson","Jorge Drexler","Natalia Lafourcade","Leonard Cohen","Eddie Vedder","Tom Waits","Jack Kerouac","Brikkuni","Brodu","The Walkmen","Father John Misty","Hermanos Gutierrez"],
+      "Rock": ["Rage Against The Machine","Queens Of The Stone Age","Audioslave","Incubus","The Doors","Pink Floyd","The Killers","The Kooks","Gomez","Black Keys","Brodu","Brikkuni","Geese","Editors","Foals","Arctic Monkeys","The Strokes","The Walkmen","Radiohead","Adult Jazz","Stalko","Cameron Winter"],
+      "Reggae/Ska": ["Slackers","Westbound Train","Damian Marley","Brikkuni","Tha Eastsidaz","Tha Dogg Pound"],
+      "Electronic": ["Nightmares On Wax","Parcels","Gramatik","Tanhai Collective","Venna","PLAYGRXVND"],
+      "World": ["Hermanos Gutierrez","Buena Vista Social Club","Tony Allen","Ibrahim Maalouf","Niko Ne Zna","Ariya Astrobeat","Souljazz Orchestra","Cochemea","Natalia Lafourcade","Jorge Drexler","Brikkuni","Djun","Michael Azzopardi","Kelan Philip Cohran","Brodu"],
+      "Brass": ["Hypnotic Brass Ensemble","Lucky Chops","Hackney Colliery","Preservation Hall","Broken Brass","Niko Ne Zna","Slavic Soul","Souljazz Orchestra","Erik Truffaz","Cochemea","Get The Blessing"]
+    };
+
+    const MOOD_TAGS = {
+      "Mellow": ["Nightmares On Wax","Cochemea","Preservation Hall","Erik Truffaz","Hackney Colliery","Khruangbin","Bon Iver","Fleet Foxes","Iron & Wine","Chet Baker","Matthew Halsall","Hermanos Gutierrez","Kevin Morby","Palace","Andrew Bird","Cataldo","Baby Rose","Moonchild","Parcels","Mac DeMarco","Jack Johnson","Melanie De Biasio","Avishai Cohen","GoGo Penguin","Makaya","Tanhai Collective","Underground Canopy","Surprise Chef","Takuya Kuroda","The Walkmen","Brodu","Jorge Drexler","Natalia Lafourcade","Flea","Dear Silas","Alex Isley","Les Imprimés","Tom Misch","Buena Vista Social Club","Lack Of Afro","Charlie Hunter","Gramatik","Slum Village","Pharcyde","Common","Talib Kweli","NxWorries","BADBADNOTGOOD","Damian Marley"],
+      "Late Night": ["Nightmares On Wax","Erik Truffaz","Hypnotic Brass Ensemble","Cochemea","Miles Davis","Chet Baker","Tame Impala","Frank Ocean","Tom Waits","BADBADNOTGOOD","Freddie Gibbs","NxWorries","Baby Rose","Moonchild","Melanie De Biasio","Makaya","Matthew Halsall","Lee Morgan","Hank Mobley","Dexter Gordon","Parcels","Gramatik","Tanhai Collective","The Walkmen","Khruangbin","Anderson .Paak","Avishai Cohen","Swamp Money","Brodu","Freddie Hubbard","Common","Talib Kweli","Slum Village","Pharcyde","MF DOOM","Madlib","Alchemist","Warren G","Nate Dogg","Damian Marley","Westbound Train","Slackers","Hermanos Gutierrez","Lack Of Afro","Jungle By Night","Omer Avital","Shabaka","Sons Of Kemet","Kamasi Washington"],
+      "Energetic": ["Rage Against The Machine","Broken Brass","Foals","Arctic Monkeys","Queens Of The Stone Age","Audioslave","Cypress Hill","Outkast","Gang Starr","Wu-Tang","Ikebe Shakedown","Budos Band","Hypnotic Brass Ensemble","Lucky Chops","Hackney Colliery","Ezra Collective","Kokoroko","Kendrick","Westbound Train","Slackers","Doechii","Brikkuni","Sharon Jones","Dap-Kings","Swamp Money","Preservation Hall","Sons Of Kemet","Leon Bridges","Thee Sacred Souls","Childish Gambino","Anderson .Paak","NxWorries","Otis Redding","Sam Cooke","Ray Charles","Tom Misch","Thee Heart Tones","Jungle Fire","EMEFE","Takuya Kuroda","Yussef","Parcels","Vampire Weekend","Arcade Fire","Two Door Cinema Club","Bombay Bicycle Club","The Strokes","Menahan Street Band","El Michels","Sure Fire Soul","Souljazz Orchestra","Ariya Astrobeat","Jurassic 5","Pharcyde","Nas","2Pac","Ja Rule","Redman","Xzibit","Snoop Dogg","Dr. Dre","Warren G"],
+      "Dark": ["Tom Waits","Hypnotic Brass Ensemble","Get The Blessing","Niko Ne Zna","Slavic Soul","Radiohead","Queens Of The Stone Age","The Doors","Brodu","Geese","Cameron Winter","Editors","Stalko","Pink Floyd","Rage Against The Machine","Adult Jazz","Brikkuni","Cypress Hill","Wu-Tang","MF DOOM","Freddie Gibbs","Charles Mingus","Miles Davis","Dexter Gordon","Lee Morgan","Hank Mobley","Coltrane","Tame Impala","The National","Modest Mouse","Beirut","Leonard Cohen","Felice Brothers","Palace","Iron & Wine","Damian Marley","Tha Eastsidaz","Tha Dogg Pound","Snoop Dogg","2Pac","Nightmares On Wax","Gramatik","Tanhai Collective","Budos Band","Menahan Street Band","El Michels","Sure Fire Soul","Ikebe Shakedown","Jungle Fire","Baby Rose","Frank Ocean","Moonchild"],
+      "Uplifting": ["Sharon Jones","Parcels","Gramatik","Nightmares On Wax","Leon Bridges","Thee Sacred Souls","Arcade Fire","Vampire Weekend","Fleet Foxes","Bon Iver","Kokoroko","Ezra Collective","Preservation Hall","Lucky Chops","Sam Cooke","Otis Redding","Ray Charles","Westbound Train","Slackers","Swamp Money","Anderson .Paak","Childish Gambino","Paul Simon","Jack Johnson","Jorge Drexler","Natalia Lafourcade","Buena Vista Social Club","Hermanos Gutierrez","Tony Allen","Souljazz Orchestra","Hypnotic Brass Ensemble","Hackney Colliery","Broken Brass","Brodu","The Head And The Heart","Felice Brothers"],
+      "Melancholic": ["Bon Iver","Nightmares On Wax","Tanhai Collective","Gramatik","Parcels","Cochemea","Erik Truffaz","Preservation Hall","The Walkmen","Palace","Iron & Wine","Kevin Morby","Andrew Bird","Cataldo","Beirut","Leonard Cohen","Felice Brothers","Maps & Atlases","Modest Mouse","The National","Local Natives","Cold War Kids","Benjamin Booker","Melanie De Biasio","Stalko","Brikkuni","Father John Misty","Counting Crows","The Head And The Heart","Editors","Brodu","Frank Ocean","Common","Talib Kweli","Nas","MF DOOM","Freddie Gibbs","BADBADNOTGOOD","Cordae","D Smoke","Baby Rose","Alex Isley","Dear Silas","Moonchild","Jorge Drexler","Natalia Lafourcade","Buena Vista Social Club","Damian Marley","Slackers","Westbound Train"],
+      "Focused": ["Miles Davis","Hypnotic Brass Ensemble","Get The Blessing","Cochemea","Erik Truffaz","Lucky Chops","John Coltrane","Makaya","Avishai Cohen","GoGo Penguin","Andrew Bird","Radiohead","Punch Brothers","Kamasi Washington","Matthew Halsall","Menahan Street Band","Gramatik","Tanhai Collective","Hermanos Gutierrez","Surprise Chef","Common","Talib Kweli","Nas","MF DOOM","Madlib","Alchemist","BADBADNOTGOOD","Freddie Gibbs","Underground Canopy","Bluestaeb","Josh Lawrence","Julian Lage","Ibrahim Maalouf","R+R=NOW","Chief Adjuah","Geese","Pink Floyd","Brikkuni","Tom Waits","Editors","Stalko","Frank Ocean","Tom Misch","Leon Bridges","Moonchild","Budos Band","Ikebe Shakedown","Sure Fire Soul","El Michels","Nightmares On Wax","Parcels","Lack Of Afro"],
+      "Dreamy": ["Tame Impala","Erik Truffaz","Cochemea","Hypnotic Brass Ensemble","Bon Iver","Fleet Foxes","Nightmares On Wax","Khruangbin","Parcels","Mac DeMarco","Vampire Weekend","Hermanos Gutierrez","Beirut","Matthew Halsall","Tanhai Collective","The Walkmen","Brodu","Chet Baker","Natalia Lafourcade","Frank Ocean","Anderson .Paak","NxWorries","Baby Rose","Moonchild","Gramatik","Slum Village","Common","BADBADNOTGOOD","Buena Vista Social Club","Jorge Drexler","Damian Marley","Westbound Train","Slackers","Venna","PLAYGRXVND"],
+      "Feel Good": ["Sharon Jones","Leon Bridges","Thee Sacred Souls","Anderson .Paak","Childish Gambino","Arcade Fire","Vampire Weekend","Lucky Chops","Preservation Hall","Sam Cooke","Otis Redding","Ray Charles","Westbound Train","Slackers","Ezra Collective","Kokoroko","Tom Misch","Swamp Money","Hypnotic Brass Ensemble","Hackney Colliery","NxWorries","Thee Heart Tones","Paul Simon","Jack Johnson","Buena Vista Social Club","Hermanos Gutierrez","Jorge Drexler","Natalia Lafourcade","Felice Brothers","Fleet Foxes","Bon Iver","The Head And The Heart","Brodu","Jurassic 5","Pharcyde","Common","Broken Brass","Souljazz Orchestra","Ariya Astrobeat","Parcels","Two Door Cinema Club","Bombay Bicycle Club"],
+      "Intense": ["Rage Against The Machine","Childish Gambino","Frank Ocean","Otis Redding","Leon Bridges","Thee Sacred Souls","Anderson .Paak","Swamp Money","Sharon Jones","Gramatik","PLAYGRXVND","Tanhai Collective","Queens Of The Stone Age","Kendrick Lamar","Outkast","Gang Starr","Wu-Tang","Cypress Hill","Pink Floyd","Audioslave","Geese","Foals","The Doors","Kamasi Washington","Brikkuni","Sons Of Kemet","Freddie Gibbs","Doechii","Charles Mingus","Coltrane","Shabaka","Ikebe Shakedown","Budos Band","Ezra Collective","Kokoroko","Hypnotic Brass Ensemble","Broken Brass","Lucky Chops","Hackney Colliery","Westbound Train","Slackers","2Pac","Nas","Kendrick","Damian Marley","Brodu","Radiohead","The National","Tame Impala"]
+    };
+
+    const GENRE_TEXT_HINTS = {
+      "Jazz": ["jazz","bebop","quartet","quintet","trio","sextet","brass","swing","bop"],
+      "Hip-Hop": ["hip hop","hip-hop","rap","beats","rhymes","freestyle"],
+      "Soul/R&B": ["soul","r&b","rhythm","blues","gospel"],
+      "Funk": ["funk","groove","funky"],
+      "Indie": ["indie","alternative","alt-"],
+      "Folk": ["folk","acoustic","singer-songwriter","americana"],
+      "Rock": ["rock","metal","punk","grunge","garage"],
+      "Reggae/Ska": ["reggae","ska","rocksteady","dub"],
+      "Electronic": ["electronic","downtempo","ambient","synth","beats"],
+      "World": ["latin","afro","bossa","samba","cumbia","salsa","flamenco","celtic","balkan","maltese"],
+      "Brass": ["brass","horn","trumpet","trombone","tuba","marching"]
+    };
+
+    const MOOD_TEXT_HINTS = {
+      "Mellow": ["mellow","chill","soft","gentle","quiet","smooth","slow"],
+      "Late Night": ["night","late","dark","slow","quiet"],
+      "Energetic": ["energy","hype","fast","dance","party","loud"],
+      "Dark": ["dark","heavy","grim","noir","shadow"],
+      "Uplifting": ["uplift","joy","happy","bright","positive","sunshine"],
+      "Melancholic": ["melanchol","sad","loss","longing","heartbreak","blue"],
+      "Focused": ["focus","work","study","concentrate","instrumental"],
+      "Dreamy": ["dream","float","haze","drift","cloud","psychedel"],
+      "Feel Good": ["feel good","fun","warm","summer","celebrate","smile"],
+      "Intense": ["intense","power","force","fierce","storm","thunder"]
+    };
+
+    function matchesTags(entry, tagMap, hintMap, selected) {
+      if (!selected.length) return true;
+      const lower = entry.toLowerCase();
+      return selected.some(filter => {
+        const keywords = tagMap[filter] || [];
+        const hints = (hintMap && hintMap[filter]) || [];
+        return keywords.some(k => lower.includes(k.toLowerCase()))
+          || hints.some(h => lower.includes(h.toLowerCase()));
+      });
+    }
+
+    function parseAlbum(entry) {
+      const dashIdx = entry.indexOf(" - ");
+      if (dashIdx === -1) return { artist: "", album: entry };
+      return { artist: entry.slice(0, dashIdx), album: entry.slice(dashIdx + 3) };
+    }
+
+    function Entrain() {
+      const SUPABASE_URL = "https://abskuivkiyvktcezmswx.supabase.co";
+      const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFic2t1aXZraXl2a3RjZXptc3d4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4OTY3MzAsImV4cCI6MjA5MjQ3MjczMH0.lf72EXTRqLF-P5rA_2FxzjKBEIs-EukgjCkNKAxpvpo";
+
+      const sbGet = async (key) => {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/entrain_data?key=eq.${key}&select=value`, {
+          headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` }
+        });
+        const data = await res.json();
+        return data.length ? data[0].value : null;
+      };
+
+      const sbSet = async (key, value) => {
+        await fetch(`${SUPABASE_URL}/rest/v1/entrain_data`, {
+          method: "POST",
+          headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json", "Prefer": "resolution=merge-duplicates" },
+          body: JSON.stringify({ key, value })
+        });
+      };
+
+      const sbGetCorrection = async (key) => {
+        try {
+          const res = await fetch(`${SUPABASE_URL}/rest/v1/entrain_corrections?key=eq.${encodeURIComponent(key)}&select=*`, {
+            headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` }
+          });
+          const data = await res.json();
+          return data.length ? data[0] : null;
+        } catch(e) { return null; }
+      };
+
+      const sbSaveCorrection = async (key, artist, album, art_url) => {
+        await fetch(`${SUPABASE_URL}/rest/v1/entrain_corrections`, {
+          method: "POST",
+          headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json", "Prefer": "resolution=merge-duplicates" },
+          body: JSON.stringify({ key, artist, album, art_url })
+        });
+      };
+
+      const [albums, setAlbumsRaw] = useState([]);
+      const [apiKey, setApiKeyRaw] = useState("");
+      const [dbLoaded, setDbLoaded] = useState(false);
+      const [selectedGenres, setSelectedGenres] = useState([]);
+      const [genreOpen, setGenreOpen] = useState(false);
+      const [moodOpen, setMoodOpen] = useState(false);
+      const dropdownRef = React.useRef();
+
+      React.useEffect(() => {
+        const handler = (e) => {
+          if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+            setGenreOpen(false);
+            setMoodOpen(false);
+          }
+        };
+        document.addEventListener("mousedown", handler);
+        return () => document.removeEventListener("mousedown", handler);
+      }, []);
+      const [selectedMoods, setSelectedMoods] = useState([]);
+      const [prompt, setPrompt] = useState("");
+      const [currentPick, setCurrentPick] = useState(null);
+      const [explanation, setExplanation] = useState("");
+      const [mode, setMode] = useState(null);
+      const [isLoading, setIsLoading] = useState(false);
+      const [feedback, setFeedback] = useState([]);
+      const [feedbackGiven, setFeedbackGiven] = useState(false);
+      const [error, setError] = useState("");
+      const [newAlbum, setNewAlbum] = useState("");
+      const [addConfirm, setAddConfirm] = useState("");
+      const [albumArt, setAlbumArt] = useState(null);
+      const [showEdit, setShowEdit] = useState(false);
+      const [editArtist, setEditArtist] = useState("");
+      const [editAlbum, setEditAlbum] = useState("");
+      const [editArt, setEditArt] = useState("");
+      const [editConfirm, setEditConfirm] = useState(false);
+      const [displayArtist, setDisplayArtist] = useState("");
+      const [displayAlbum, setDisplayAlbum] = useState("");
+      const [excludedPicks, setExcludedPicks] = useState([]);
+      const fileRef = useRef();
+
+      const setAlbums = (val) => {
+        const next = typeof val === "function" ? val(albums) : val;
+        setAlbumsRaw(next);
+        sbSet("library", JSON.stringify(next));
+      };
+
+      const setApiKey = (val) => { setApiKeyRaw(val); sbSet("apikey", val); };
+
+      React.useEffect(() => {
+        (async () => {
+          try {
+            const [lib, key] = await Promise.all([sbGet("library"), sbGet("apikey")]);
+            if (lib) setAlbumsRaw(JSON.parse(lib));
+            if (key) setApiKeyRaw(key);
+          } catch(e) { console.error("Supabase load error", e); }
+          finally { setDbLoaded(true); }
+        })();
+      }, []);
+
+      const handleFile = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          const lines = evt.target.result.split("\n").map(l => l.trim()).filter(l => l.length > 0);
+          setAlbums(lines);
+          setCurrentPick(null);
+          setError("");
+        };
+        reader.readAsText(file);
+      };
+
+      const toggleFilter = (list, setList, value) => {
+        setList(prev => prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]);
+      };
+
+      const fetchAlbumArt = async (artist, album) => {
+        if (!artist || !album) return;
+        setAlbumArt(null);
+        try {
+          const key = `${artist} - ${album}`;
+          const correction = await sbGetCorrection(key);
+          if (correction && correction.art_url) {
+            setAlbumArt(correction.art_url);
+            if (correction.artist) setEditArtist(correction.artist);
+            if (correction.album) setEditAlbum(correction.album);
+            return;
+          }
+          const query = encodeURIComponent(`${artist} ${album}`);
+          const res = await fetch(`https://itunes.apple.com/search?term=${query}&media=music&entity=album&limit=1`);
+          const data = await res.json();
+          if (data.results && data.results.length > 0) {
+            setAlbumArt(data.results[0].artworkUrl100.replace("100x100bb", "600x600bb"));
+          }
+        } catch(e) { setAlbumArt(null); }
+      };
+
+      const setupPick = (pick) => {
+        setCurrentPick(pick);
+        setAlbumArt(null);
+        setShowEdit(false);
+        setEditConfirm(false);
+        const p = parseAlbum(pick);
+        setEditArtist(p.artist);
+        setEditAlbum(p.album);
+        setDisplayArtist(p.artist);
+        setDisplayAlbum(p.album);
+        setEditArt("");
+        fetchAlbumArt(p.artist, p.album);
+      };
+
+      const randomPick = () => {
+        if (!albums.length) return;
+        const filtered = albums.filter(a =>
+          matchesTags(a, GENRE_TAGS, GENRE_TEXT_HINTS, selectedGenres) &&
+          matchesTags(a, MOOD_TAGS, MOOD_TEXT_HINTS, selectedMoods)
+        );
+        const pool = filtered.length ? filtered : albums;
+        const pick = pool[Math.floor(Math.random() * pool.length)];
+        setupPick(pick);
+        setExcludedPicks([]);
+        setExplanation(filtered.length > 0 && filtered.length < albums.length && (selectedGenres.length || selectedMoods.length)
+          ? `Filtered to ${filtered.length} matching album${filtered.length !== 1 ? "s" : ""}.` : "");
+        setMode("random");
+        setFeedbackGiven(false);
+        setError("");
+      };
+
+      const aiRecommend = async () => {
+        if (!albums.length) return;
+        if (!apiKey) { setError("Please enter your Anthropic API key in settings below."); return; }
+        setIsLoading(true);
+        setCurrentPick(null);
+        setExplanation("");
+        setError("");
+        setFeedbackGiven(false);
+
+        const filters = [];
+        if (selectedGenres.length) filters.push("Genre preference: " + selectedGenres.join(", "));
+        if (selectedMoods.length) filters.push("Mood: " + selectedMoods.join(", "));
+
+        const excludedNote = excludedPicks.length ? "\nDo NOT suggest these albums (already shown): " + excludedPicks.join(", ") : "";
+        const feedbackNote = feedback.length ? "\nUser taste corrections: " + feedback.join(" | ") : "";
+
+        const systemPrompt = `You are a music recommendation engine. Your ONLY output must be a single raw JSON object. No introduction, no explanation outside the JSON, no markdown, no code blocks. Just the JSON.
+
+Pick ONE album from the user's library that best fits their request. Use web search to research albums you're uncertain about. Consider mood, activity, time of day, location, and cultural context.
+${excludedNote}${feedbackNote}
+Output format — nothing else:
+{"album": "Exact entry from library as written", "explanation": "2-3 sentences on why this fits"}`;
+
+        const userContent = `My library (${albums.length} albums):\n${albums.join("\n")}\n\n${filters.join("\n")}\n${prompt ? "Request: " + prompt : "No specific request — pick something compelling."}\n\nRespond with ONLY the JSON object, nothing else.`;
+
+        try {
+          const res = await fetch("https://api.anthropic.com/v1/messages", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "x-api-key": apiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
+            body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 1000, tools: [{ type: "web_search_20250305", name: "web_search" }], system: systemPrompt, messages: [{ role: "user", content: userContent }] })
+          });
+          const data = await res.json();
+          if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+          const text = data.content.filter(b => b.type === "text").map(b => b.text).join("");
+          const cleaned = text.replace(/<cite\b[^>]*>([\s\S]*?)<\/cite>/g, "$1").replace(/<[^>]+>/g, "");
+          const jsonStart = cleaned.indexOf("{");
+          const jsonEnd = cleaned.lastIndexOf("}");
+          const parsed = JSON.parse(cleaned.slice(jsonStart, jsonEnd + 1));
+          setupPick(parsed.album);
+          setExplanation(parsed.explanation);
+          setMode("ai");
+          setExcludedPicks(prev => [...prev, parsed.album]);
+        } catch (err) {
+          setError("Error: " + (err.message || JSON.stringify(err)));
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      const addAlbum = () => {
+        const entry = newAlbum.trim();
+        if (!entry) return;
+        setAlbums(prev => [...prev, entry]);
+        setNewAlbum("");
+        setAddConfirm(`Added successfully`);
+        setTimeout(() => setAddConfirm(""), 2500);
+      };
+
+      const downloadCSV = () => {
+        const blob = new Blob([albums.join("\n")], { type: "text/plain" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url; a.download = "My_Qobuz_Library.csv"; a.click();
+        URL.revokeObjectURL(url);
+      };
+
+      const saveCorrection = async () => {
+        if (!currentPick) return;
+        const p = parseAlbum(currentPick);
+        const artist = editArtist || p.artist;
+        const album = editAlbum || p.album;
+        const art_url = editArt || albumArt || "";
+        await sbSaveCorrection(currentPick, artist, album, art_url);
+        if (editArt) setAlbumArt(editArt);
+        if (editArtist) setDisplayArtist(editArtist);
+        if (editAlbum) setDisplayAlbum(editAlbum);
+        setEditConfirm(true);
+        setTimeout(() => { setShowEdit(false); setEditConfirm(false); }, 2000);
+      };
+
+      const reportWrong = () => {
+        if (!currentPick || feedbackGiven) return;
+        const context = [...selectedGenres, ...selectedMoods, prompt].filter(Boolean).join(", ") || "general request";
+        setFeedback(prev => [...prev, `"${currentPick}" was a bad fit for: ${context}`]);
+        setFeedbackGiven(true);
+      };
+
+      const parsed = currentPick ? parseAlbum(currentPick) : null;
+
+      if (!dbLoaded) return (
+        <div className="loading-screen">
+          <div className="loading-wordmark">entr<span>ain</span></div>
+          <div className="loading-dots">
+            <div className="loading-dot" />
+            <div className="loading-dot" />
+            <div className="loading-dot" />
+          </div>
+        </div>
+      );
+
+      return (
+        <div className="app">
+          {/* Header */}
+          <header className="header">
+            <div className="wordmark">entr<span>ain</span></div>
+            {albums.length > 0 && (
+              <div className="lib-count">{albums.length} albums</div>
+            )}
+          </header>
+
+          <main className="main">
+
+            {/* Genre + Mood Dropdowns */}
+            <div className="dropdowns" ref={dropdownRef}>
+              {/* Genre */}
+              <div className={`dropdown-wrap${genreOpen ? " open" : ""}`}>
+                <button
+                  className={`dropdown-btn${selectedGenres.length ? " has-selection" : ""}`}
+                  onClick={() => { setGenreOpen(!genreOpen); setMoodOpen(false); }}
+                >
+                  Genre
+                  {selectedGenres.length > 0 && (
+                    <span className="dropdown-count">{selectedGenres.length}</span>
+                  )}
+                </button>
+                <div className="dropdown-menu">
+                  {GENRES.map(g => (
+                    <button key={g} className={`chip${selectedGenres.includes(g) ? " active" : ""}`}
+                      onClick={() => toggleFilter(selectedGenres, setSelectedGenres, g)}>{g}</button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Mood */}
+              <div className={`dropdown-wrap${moodOpen ? " open" : ""}`}>
+                <button
+                  className={`dropdown-btn${selectedMoods.length ? " has-selection" : ""}`}
+                  onClick={() => { setMoodOpen(!moodOpen); setGenreOpen(false); }}
+                >
+                  Mood
+                  {selectedMoods.length > 0 && (
+                    <span className="dropdown-count">{selectedMoods.length}</span>
+                  )}
+                </button>
+                <div className="dropdown-menu">
+                  {MOODS.map(m => (
+                    <button key={m} className={`chip${selectedMoods.includes(m) ? " active" : ""}`}
+                      onClick={() => toggleFilter(selectedMoods, setSelectedMoods, m)}>{m}</button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Prompt */}
+            <div>
+              <div className="label">Tell me more</div>
+              <div className="prompt-wrap">
+                <input className="prompt-input"
+                  placeholder="late night drive, cooking, need energy..."
+                  value={prompt}
+                  onChange={e => setPrompt(e.target.value)}
+                  onKeyDown={e => e.key === "Enter" && aiRecommend()}
+                />
+                {prompt && (
+                  <button className="prompt-clear" onClick={() => setPrompt("")}>×</button>
+                )}
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="actions">
+              <button className="btn btn-ghost" onClick={randomPick} disabled={!albums.length || isLoading}>
+                Shuffle
+              </button>
+              <button className="btn btn-primary" onClick={aiRecommend} disabled={!albums.length || isLoading}>
+                Recommend
+              </button>
+            </div>
+
+            {/* Loading */}
+            {isLoading && (
+              <div className="loading">
+                <div className="spinner" />
+                Searching your library...
+              </div>
+            )}
+
+            {/* Error */}
+            {error && <div className="error">{error}</div>}
+
+            {/* Result */}
+            {currentPick && !isLoading && (
+              <div className="result-card">
+                <div className="result-art-wrap">
+                  {albumArt
+                    ? <img className="result-art" src={albumArt} alt={displayAlbum || parsed.album} />
+                    : <div className="result-art-placeholder">♫</div>
+                  }
+                  <div className="result-mode-badge">
+                    {mode === "ai" ? "✦ recommended" : "⇄ shuffled"}
+                  </div>
+                </div>
+                <div className="result-body">
+                  {(displayArtist || parsed.artist) && (
+                    <div className="result-artist">{displayArtist || parsed.artist}</div>
+                  )}
+                  <div className="result-album">{displayAlbum || parsed.album}</div>
+                  {explanation && (
+                    <div className="result-explanation">{explanation}</div>
+                  )}
+                  <div className="result-actions">
+                    {mode === "ai" && (
+                      <button className="result-btn accent" onClick={aiRecommend} disabled={isLoading}>
+                        Try another
+                      </button>
+                    )}
+                    {mode === "ai" && (
+                      <button className={`result-btn${feedbackGiven ? " muted" : " danger"}`}
+                        onClick={reportWrong} disabled={feedbackGiven}>
+                        {feedbackGiven ? "Noted ✓" : "Wrong vibe"}
+                      </button>
+                    )}
+                    <button className="result-btn" onClick={() => { setShowEdit(!showEdit); setEditConfirm(false); }}>
+                      {showEdit ? "Cancel" : "Fix this"}
+                    </button>
+                  </div>
+
+                  {showEdit && (
+                    <div className="edit-panel">
+                      <div className="edit-field">
+                        <label>Artist</label>
+                        <input className="edit-input" value={editArtist} onChange={e => setEditArtist(e.target.value)} placeholder="Artist name" />
+                      </div>
+                      <div className="edit-field">
+                        <label>Album</label>
+                        <input className="edit-input" value={editAlbum} onChange={e => setEditAlbum(e.target.value)} placeholder="Album title" />
+                      </div>
+                      <div className="edit-field">
+                        <label>Album art URL</label>
+                        <input className="edit-input" value={editArt} onChange={e => setEditArt(e.target.value)} placeholder="Paste image URL..." />
+                      </div>
+                      {editArt && (
+                        <img className="edit-preview" src={editArt} alt="preview" onError={e => e.target.style.display="none"} />
+                      )}
+                      <div className="edit-actions">
+                        <button className="edit-save" onClick={saveCorrection}>Save correction</button>
+                        <button className="edit-cancel" onClick={() => setShowEdit(false)}>Cancel</button>
+                      </div>
+                      {editConfirm && <div className="edit-confirm">Saved ✓</div>}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Add album */}
+            <div className="section">
+              <div className="label">Add an album</div>
+              <div className="add-row">
+                <input className="add-input" placeholder="Artist - Album Title"
+                  value={newAlbum} onChange={e => setNewAlbum(e.target.value)}
+                  onKeyDown={e => e.key === "Enter" && addAlbum()} />
+                <button className="add-btn" onClick={addAlbum} disabled={!newAlbum.trim()}>Add</button>
+              </div>
+              {addConfirm && <div className="confirm-msg">{addConfirm}</div>}
+              {albums.length > 0 && (
+                <button className="download-btn" onClick={downloadCSV}>
+                  Download library ({albums.length} albums)
+                </button>
+              )}
+            </div>
+
+            {/* Library */}
+            <div className="section">
+              <div className="label">Library</div>
+              <div className="upload-zone" onClick={() => fileRef.current.click()}>
+                <div className="upload-icon">♫</div>
+                {albums.length > 0
+                  ? <div className="upload-count">{albums.length} albums loaded</div>
+                  : <div className="upload-text">Upload your CSV library</div>
+                }
+                <div className="upload-text" style={{fontSize:12}}>
+                  {albums.length > 0 ? "Tap to replace" : "Exported from Tune My Music or similar"}
+                </div>
+              </div>
+              <input ref={fileRef} type="file" accept=".csv,.txt" style={{display:"none"}} onChange={handleFile} />
+            </div>
+
+            {/* Settings */}
+            <div className="section">
+              <div className="label">Settings</div>
+              <input className="key-input" type="password"
+                placeholder="Anthropic API key (sk-ant-...)"
+                value={apiKey} onChange={e => setApiKey(e.target.value)} />
+              {apiKey && <div className="confirm-msg" style={{marginTop:8}}>Key saved ✓</div>}
+            </div>
+
+          </main>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<Entrain />);
+  </script>
+</body>
+</html>
