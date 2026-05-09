@@ -1102,7 +1102,7 @@ Output format — nothing else:
 
       return (
         <div className="app">
-          {/* Header */}
+
           <header className="header">
             <div className="wordmark">entr<span>ain</span></div>
             {albums.length > 0 && (
@@ -1112,9 +1112,9 @@ Output format — nothing else:
 
           <main className="main">
 
-            {/* Genre + Mood Dropdowns */}
+
             <div className="dropdowns" ref={dropdownRef}>
-              {/* Genre */}
+
               <div className={`dropdown-wrap${genreOpen ? " open" : ""}`}>
                 <button
                   className={`dropdown-btn${selectedGenres.length ? " has-selection" : ""}`}
@@ -1133,7 +1133,7 @@ Output format — nothing else:
                 </div>
               </div>
 
-              {/* Mood */}
+
               <div className={`dropdown-wrap${moodOpen ? " open" : ""}`}>
                 <button
                   className={`dropdown-btn${selectedMoods.length ? " has-selection" : ""}`}
@@ -1153,7 +1153,7 @@ Output format — nothing else:
               </div>
             </div>
 
-            {/* Prompt */}
+
             <div>
               <div className="label">Tell me more</div>
               <div className="prompt-wrap">
@@ -1169,7 +1169,7 @@ Output format — nothing else:
               </div>
             </div>
 
-            {/* Actions */}
+
             <div className="actions">
               <button className="btn btn-ghost" onClick={randomPick} disabled={!albums.length || isLoading}>
                 Shuffle
@@ -1179,7 +1179,7 @@ Output format — nothing else:
               </button>
             </div>
 
-            {/* Loading */}
+
             {isLoading && (
               <div className="loading">
                 <div className="spinner" />
@@ -1187,10 +1187,10 @@ Output format — nothing else:
               </div>
             )}
 
-            {/* Error */}
+
             {error && <div className="error">{error}</div>}
 
-            {/* Result */}
+
             {currentPick && !isLoading && (
               <div className="result-card">
                 <div className="result-art-wrap">
@@ -1255,7 +1255,7 @@ Output format — nothing else:
               </div>
             )}
 
-            {/* Add album */}
+
             <div className="section">
               <div className="label">Add an album</div>
               <div className="add-row">
@@ -1278,7 +1278,6 @@ Output format — nothing else:
 
           </main>
 
-          {/* First-run setup modal */}
           {showSetup && (
             <div className="setup-backdrop">
               <div className="setup-modal">
