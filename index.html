@@ -230,6 +230,56 @@
     .prompt-clear:hover { color: var(--text-2); }
 
     /* ── Actions ── */
+    .tier-one {
+      display: flex;
+      gap: 8px;
+      align-items: stretch;
+    }
+
+    .tier-one .dropdowns {
+      flex: 1;
+    }
+
+    .btn-shuffle {
+      width: 54px;
+      flex-shrink: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 22px;
+      color: var(--text-2);
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-shuffle:hover:not(:disabled) { border-color: var(--border-mid); color: var(--text); }
+    .btn-shuffle:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    .tier-divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 4px 0;
+    }
+
+    .tier-divider::before,
+    .tier-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .tier-divider span {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-3);
+      white-space: nowrap;
+    }
+
     .controls-section {
       display: flex;
       flex-direction: column;
@@ -1212,46 +1262,55 @@ Output format — nothing else:
 
 
             <div className="controls-section">
-              <div className="dropdowns" ref={dropdownRef}>
-                <div className={`dropdown-wrap${genreOpen ? " open" : ""}`}>
-                  <button
-                    className={`dropdown-btn${selectedGenres.length ? " has-selection" : ""}`}
-                    onClick={() => { setGenreOpen(!genreOpen); setMoodOpen(false); }}
-                  >
-                    Genre
-                    {selectedGenres.length > 0 && (
-                      <span className="dropdown-count">{selectedGenres.length}</span>
-                    )}
-                  </button>
-                  <div className="dropdown-menu">
-                    {GENRES.map(g => (
-                      <button key={g} className={`chip${selectedGenres.includes(g) ? " active" : ""}`}
-                        onClick={() => toggleFilter(selectedGenres, setSelectedGenres, g)}>{g}</button>
-                    ))}
+              <div className="tier-one">
+                <div className="dropdowns" ref={dropdownRef}>
+                  <div className={`dropdown-wrap${genreOpen ? " open" : ""}`}>
+                    <button
+                      className={`dropdown-btn${selectedGenres.length ? " has-selection" : ""}`}
+                      onClick={() => { setGenreOpen(!genreOpen); setMoodOpen(false); }}
+                    >
+                      Genre
+                      {selectedGenres.length > 0 && (
+                        <span className="dropdown-count">{selectedGenres.length}</span>
+                      )}
+                    </button>
+                    <div className="dropdown-menu">
+                      {GENRES.map(g => (
+                        <button key={g} className={`chip${selectedGenres.includes(g) ? " active" : ""}`}
+                          onClick={() => toggleFilter(selectedGenres, setSelectedGenres, g)}>{g}</button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className={`dropdown-wrap${moodOpen ? " open" : ""}`}>
+                    <button
+                      className={`dropdown-btn${selectedMoods.length ? " has-selection" : ""}`}
+                      onClick={() => { setMoodOpen(!moodOpen); setGenreOpen(false); }}
+                    >
+                      Mood
+                      {selectedMoods.length > 0 && (
+                        <span className="dropdown-count">{selectedMoods.length}</span>
+                      )}
+                    </button>
+                    <div className="dropdown-menu">
+                      {MOODS.map(m => (
+                        <button key={m} className={`chip${selectedMoods.includes(m) ? " active" : ""}`}
+                          onClick={() => toggleFilter(selectedMoods, setSelectedMoods, m)}>{m}</button>
+                      ))}
+                    </div>
                   </div>
                 </div>
-                <div className={`dropdown-wrap${moodOpen ? " open" : ""}`}>
-                  <button
-                    className={`dropdown-btn${selectedMoods.length ? " has-selection" : ""}`}
-                    onClick={() => { setMoodOpen(!moodOpen); setGenreOpen(false); }}
-                  >
-                    Mood
-                    {selectedMoods.length > 0 && (
-                      <span className="dropdown-count">{selectedMoods.length}</span>
-                    )}
-                  </button>
-                  <div className="dropdown-menu">
-                    {MOODS.map(m => (
-                      <button key={m} className={`chip${selectedMoods.includes(m) ? " active" : ""}`}
-                        onClick={() => toggleFilter(selectedMoods, setSelectedMoods, m)}>{m}</button>
-                    ))}
-                  </div>
-                </div>
+                <button className="btn-shuffle" onClick={randomPick} disabled={!albums.length || isLoading}>
+                  ⇄
+                </button>
+              </div>
+
+              <div className="tier-divider">
+                <span>Need something more specific?</span>
               </div>
 
               <div className="prompt-wrap">
                 <input className="prompt-input"
-                  placeholder="Tell me more — late night drive, cooking..."
+                  placeholder="late night drive, cooking, need energy..."
                   value={prompt}
                   onChange={e => setPrompt(e.target.value)}
                   onKeyDown={e => e.key === "Enter" && aiRecommend()}
@@ -1263,11 +1322,6 @@ Output format — nothing else:
 
               <button className="btn btn-primary btn-full" onClick={aiRecommend} disabled={!albums.length || isLoading}>
                 Recommend
-                <span className="btn-sub">AI-powered</span>
-              </button>
-              <button className="btn btn-ghost btn-full btn-sm" onClick={randomPick} disabled={!albums.length || isLoading}>
-                Surprise me
-                <span className="btn-sub">Random pick</span>
               </button>
             </div>
 
