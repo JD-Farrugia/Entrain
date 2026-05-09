@@ -53,7 +53,6 @@
       padding: 40px 20px 28px;
       display: flex;
       align-items: flex-end;
-      justify-content: space-between;
     }
 
     .wordmark {
@@ -231,9 +230,35 @@
     .prompt-clear:hover { color: var(--text-2); }
 
     /* ── Actions ── */
+    .controls-section {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-top: 4px;
+    }
+
     .actions {
       display: flex;
       gap: 10px;
+    }
+
+    .btn-full {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .btn-sm {
+      padding: 10px;
+    }
+
+    .btn-sub {
+      font-size: 10px;
+      font-weight: 500;
+      opacity: 0.6;
+      letter-spacing: 0.04em;
     }
 
     .btn {
@@ -1105,9 +1130,6 @@ Output format — nothing else:
 
           <header className="header">
             <div className="wordmark">entr<span>ain</span></div>
-            {albums.length > 0 && (
-              <div className="lib-count">{albums.length} albums</div>
-            )}
           </header>
 
           <main className="main">
@@ -1255,6 +1277,66 @@ Output format — nothing else:
               </div>
             )}
 
+
+            <div className="controls-section">
+              <div className="dropdowns" ref={dropdownRef}>
+                <div className={`dropdown-wrap${genreOpen ? " open" : ""}`}>
+                  <button
+                    className={`dropdown-btn${selectedGenres.length ? " has-selection" : ""}`}
+                    onClick={() => { setGenreOpen(!genreOpen); setMoodOpen(false); }}
+                  >
+                    Genre
+                    {selectedGenres.length > 0 && (
+                      <span className="dropdown-count">{selectedGenres.length}</span>
+                    )}
+                  </button>
+                  <div className="dropdown-menu">
+                    {GENRES.map(g => (
+                      <button key={g} className={`chip${selectedGenres.includes(g) ? " active" : ""}`}
+                        onClick={() => toggleFilter(selectedGenres, setSelectedGenres, g)}>{g}</button>
+                    ))}
+                  </div>
+                </div>
+                <div className={`dropdown-wrap${moodOpen ? " open" : ""}`}>
+                  <button
+                    className={`dropdown-btn${selectedMoods.length ? " has-selection" : ""}`}
+                    onClick={() => { setMoodOpen(!moodOpen); setGenreOpen(false); }}
+                  >
+                    Mood
+                    {selectedMoods.length > 0 && (
+                      <span className="dropdown-count">{selectedMoods.length}</span>
+                    )}
+                  </button>
+                  <div className="dropdown-menu">
+                    {MOODS.map(m => (
+                      <button key={m} className={`chip${selectedMoods.includes(m) ? " active" : ""}`}
+                        onClick={() => toggleFilter(selectedMoods, setSelectedMoods, m)}>{m}</button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="prompt-wrap">
+                <input className="prompt-input"
+                  placeholder="Tell me more — late night drive, cooking..."
+                  value={prompt}
+                  onChange={e => setPrompt(e.target.value)}
+                  onKeyDown={e => e.key === "Enter" && aiRecommend()}
+                />
+                {prompt && (
+                  <button className="prompt-clear" onClick={() => setPrompt("")}>×</button>
+                )}
+              </div>
+
+              <button className="btn btn-primary btn-full" onClick={aiRecommend} disabled={!albums.length || isLoading}>
+                Recommend
+                <span className="btn-sub">AI-powered</span>
+              </button>
+              <button className="btn btn-ghost btn-full btn-sm" onClick={randomPick} disabled={!albums.length || isLoading}>
+                Surprise me
+                <span className="btn-sub">Random pick</span>
+              </button>
+            </div>
 
             <div className="section">
               <div className="label">Add an album</div>
