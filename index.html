@@ -921,15 +921,15 @@
 
       React.useEffect(() => {
         (async () => {
+          let key = null;
           try {
-            const [lib, key] = await Promise.all([sbGet("library"), sbGet("apikey")]);
+            const [lib, fetchedKey] = await Promise.all([sbGet("library"), sbGet("apikey")]);
             if (lib) setAlbumsRaw(JSON.parse(lib));
-            if (key) setApiKeyRaw(key);
+            if (fetchedKey) { setApiKeyRaw(fetchedKey); key = fetchedKey; }
           } catch(e) { console.error("Supabase load error", e); }
           finally {
             setDbLoaded(true);
-            const hasKey = await sbGet("apikey");
-            if (!hasKey) setShowSetup(true);
+            if (!key) setShowSetup(true);
           }
         })();
       }, []);
