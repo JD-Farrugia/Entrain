@@ -38,12 +38,24 @@
     }
 
     .app {
-      min-height: 100vh;
+      height: 100dvh;
       background: var(--bg);
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding-bottom: 80px;
+      overflow: hidden;
+    }
+
+    .content-area {
+      flex: 1;
+      width: 100%;
+      max-width: 520px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0 20px;
+      overflow-y: auto;
     }
 
     /* ── State transitions ── */
@@ -57,15 +69,21 @@
     }
 
     /* ── Home state ── */
+    /* ── Animation stage ── */
+    .stage {
+      width: 100%;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+
     .home-screen {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      min-height: calc(100vh - 100px);
       width: 100%;
-      max-width: 520px;
-      padding: 0 20px;
       gap: 32px;
     }
 
@@ -84,28 +102,84 @@
       display: flex;
       gap: 12px;
       width: 100%;
+      position: relative;
+      height: 60px;
     }
 
     .home-btn {
-      flex: 1;
-      padding: 18px;
+      position: absolute;
+      top: 0;
+      height: 60px;
       border-radius: 16px;
       font-family: 'Outfit', sans-serif;
       font-size: 16px;
       font-weight: 700;
       cursor: pointer;
-      transition: all 0.2s;
       text-align: center;
       letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition:
+        width 0.5s cubic-bezier(0.34,1.2,0.64,1),
+        left 0.5s cubic-bezier(0.34,1.2,0.64,1),
+        opacity 0.35s ease,
+        transform 0.5s cubic-bezier(0.34,1.2,0.64,1);
+      will-change: transform, opacity, left, width;
+      overflow: hidden;
+    }
+
+    /* Home positions — side by side, each ~48% */
+    .home-btn-shuffle.pos-home {
+      left: 0;
+      width: calc(50% - 6px);
+      opacity: 1;
+    }
+
+    .home-btn-recommend.pos-home {
+      left: calc(50% + 6px);
+      width: calc(50% - 6px);
+      opacity: 1;
+    }
+
+    /* Shuffle active — shuffle centered, recommend gone */
+    .home-btn-shuffle.pos-shuffle {
+      left: calc(25% - 3px);
+      width: calc(50% - 6px);
+      opacity: 1;
+    }
+
+    .home-btn-recommend.pos-shuffle {
+      left: calc(50% + 6px);
+      width: calc(50% - 6px);
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.8);
+    }
+
+    /* Recommend active — recommend centered, shuffle gone */
+    .home-btn-shuffle.pos-recommend {
+      left: 0;
+      width: calc(50% - 6px);
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.8);
+    }
+
+    .home-btn-recommend.pos-recommend {
+      left: 0;
+      width: 100%;
+      opacity: 1;
     }
 
     .home-btn-shuffle {
       background: var(--surface);
       border: 1px solid var(--border);
       color: var(--text);
+      font-size: 16px;
     }
 
-    .home-btn-shuffle:hover { border-color: var(--border-mid); background: var(--surface-2); }
+    .home-btn-shuffle:hover:not([disabled]) { border-color: var(--border-mid); background: var(--surface-2); }
 
     .home-btn-recommend {
       background: var(--accent);
@@ -113,7 +187,102 @@
       color: #09090e;
     }
 
-    .home-btn-recommend:hover { background: #fbbf24; box-shadow: 0 0 24px var(--accent-glow); }
+    .home-btn-recommend:hover:not([disabled]) { background: #fbbf24; }
+
+    /* Filter buttons that emerge from behind shuffle */
+    .filter-orbit {
+      width: 100%;
+      height: 54px;
+      position: relative;
+      margin-top: 16px;
+      transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.34,1.2,0.64,1);
+    }
+
+    .filter-orbit.hidden {
+      opacity: 0;
+      transform: scale(0.6);
+      pointer-events: none;
+    }
+
+    .filter-orbit.visible {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .orbit-genre {
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+
+    .orbit-mood {
+      position: absolute;
+      right: 0;
+      top: 0;
+    }
+
+    .orbit-btn {
+      width: calc(50% - 40px);
+      min-width: 110px;
+      padding: 11px 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-2);
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .orbit-btn:hover { border-color: var(--border-mid); color: var(--text); }
+    .orbit-btn.has-selection { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+
+    /* Question text */
+    .home-question {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+      text-align: center;
+      letter-spacing: -0.01em;
+      line-height: 1.3;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .home-question.hidden {
+      opacity: 0;
+      transform: translateY(-12px);
+      pointer-events: none;
+    }
+
+    .home-question span { color: var(--accent); }
+
+    /* Recommend prompt area */
+    .recommend-prompt {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.34,1.2,0.64,1);
+      margin-top: 16px;
+    }
+
+    .recommend-prompt.hidden {
+      opacity: 0;
+      transform: translateY(20px);
+      pointer-events: none;
+    }
+
+    .recommend-prompt.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
 
     /* ── Shuffle state ── */
     .shuffle-screen {
@@ -1367,90 +1536,127 @@ Output format — nothing else:
         setMoodOpen(false);
       };
 
+      const enterShuffle = () => {
+        setAppState("shuffle");
+        setCurrentPick(null);
+        setExplanation("");
+        setError("");
+      };
+
+      const enterRecommend = () => {
+        setAppState("recommend");
+        setCurrentPick(null);
+        setExplanation("");
+        setError("");
+      };
+
+      const pos = (btn) => {
+        if (appState === "home") return "pos-home";
+        if (appState === "shuffle") return `pos-shuffle`;
+        if (appState === "recommend") return `pos-recommend`;
+        return "pos-home";
+      };
+
       return (
         <div className="app">
-
-          <header className="header" style={{cursor: appState !== "home" ? "pointer" : "default"}} onClick={appState !== "home" ? goHome : undefined}>
+          <header className="header" style={{cursor: appState !== "home" ? "pointer" : "default", width:"100%", maxWidth:"520px", padding:"28px 20px 16px"}} onClick={appState !== "home" ? goHome : undefined}>
             <div className="wordmark">entr<span>ain</span></div>
           </header>
 
-          <main className="main">
+          <div className="content-area">
 
-          {appState === "home" && (
-            <div className="home-screen fade-in">
-              <div className="home-question">What are we listening to<span> today?</span></div>
-              <div className="home-btns">
-                <button className="home-btn home-btn-shuffle" onClick={() => setAppState("shuffle")}>
-                  Shuffle
-                </button>
-                <button className="home-btn home-btn-recommend" onClick={() => setAppState("recommend")}>
-                  Recommend
-                </button>
-              </div>
-            </div>
-          )}
-
-          {appState === "shuffle" && (
-            <div className="shuffle-screen fade-in">
-              {currentPick && !isLoading && (
-                <div className="result-card" style={{width:"100%"}}>
-                  <div className="result-art-wrap">
-                    {albumArt
-                      ? <img className="result-art" src={albumArt} alt={displayAlbum || parsed.album} />
-                      : <div className="result-art-placeholder">♫</div>
-                    }
-                    <div className="result-mode-badge">⇄ shuffled</div>
-                  </div>
-                  <div className="result-body">
-                    {(displayArtist || parsed.artist) && (
-                      <div className="result-artist">{displayArtist || parsed.artist}</div>
-                    )}
-                    <div className="result-album">{displayAlbum || parsed.album}</div>
-                    <div className="result-actions">
-                      <button className="result-btn" onClick={() => { setShowEdit(!showEdit); setEditConfirm(false); }}>
-                        {showEdit ? "Cancel" : "Fix this"}
-                      </button>
-                    </div>
-                    {showEdit && (
-                      <div className="edit-panel">
-                        <div className="edit-field">
-                          <label>Artist</label>
-                          <input className="edit-input" value={editArtist} onChange={e => setEditArtist(e.target.value)} placeholder="Artist name" />
-                        </div>
-                        <div className="edit-field">
-                          <label>Album</label>
-                          <input className="edit-input" value={editAlbum} onChange={e => setEditAlbum(e.target.value)} placeholder="Album title" />
-                        </div>
-                        <div className="edit-field">
-                          <label>Album art URL</label>
-                          <input className="edit-input" value={editArt} onChange={e => setEditArt(e.target.value)} placeholder="Paste image URL..." />
-                        </div>
-                        {editArt && <img className="edit-preview" src={editArt} alt="preview" onError={e => e.target.style.display="none"} />}
-                        <div className="edit-actions">
-                          <button className="edit-save" onClick={saveCorrection}>Save</button>
-                          <button className="edit-cancel" onClick={() => setShowEdit(false)}>Cancel</button>
-                        </div>
-                        {editConfirm && <div className="edit-confirm">Saved ✓</div>}
-                      </div>
-                    )}
+            {/* Result card — shown in shuffle and recommend states */}
+            {currentPick && !isLoading && appState !== "home" && (
+              <div className="result-card fade-in" style={{width:"100%", marginBottom: 20}}>
+                <div className="result-art-wrap">
+                  {albumArt
+                    ? <img className="result-art" src={albumArt} alt={displayAlbum || parsed.album} />
+                    : <div className="result-art-placeholder">♫</div>
+                  }
+                  <div className="result-mode-badge">
+                    {appState === "recommend" ? "✦ recommended" : "⇄ shuffled"}
                   </div>
                 </div>
-              )}
+                <div className="result-body">
+                  {(displayArtist || parsed.artist) && (
+                    <div className="result-artist">{displayArtist || parsed.artist}</div>
+                  )}
+                  <div className="result-album">{displayAlbum || parsed.album}</div>
+                  {explanation && <div className="result-explanation">{explanation}</div>}
+                  <div className="result-actions">
+                    {appState === "recommend" && (
+                      <button className="result-btn accent" onClick={aiRecommend} disabled={isLoading}>Try another</button>
+                    )}
+                    {appState === "recommend" && (
+                      <button className={`result-btn${feedbackGiven ? " muted" : " danger"}`} onClick={reportWrong} disabled={feedbackGiven}>
+                        {feedbackGiven ? "Noted ✓" : "Wrong vibe"}
+                      </button>
+                    )}
+                    <button className="result-btn" onClick={() => { setShowEdit(!showEdit); setEditConfirm(false); }}>
+                      {showEdit ? "Cancel" : "Fix this"}
+                    </button>
+                  </div>
+                  {showEdit && (
+                    <div className="edit-panel">
+                      <div className="edit-field"><label>Artist</label>
+                        <input className="edit-input" value={editArtist} onChange={e => setEditArtist(e.target.value)} placeholder="Artist name" />
+                      </div>
+                      <div className="edit-field"><label>Album</label>
+                        <input className="edit-input" value={editAlbum} onChange={e => setEditAlbum(e.target.value)} placeholder="Album title" />
+                      </div>
+                      <div className="edit-field"><label>Album art URL</label>
+                        <input className="edit-input" value={editArt} onChange={e => setEditArt(e.target.value)} placeholder="Paste image URL..." />
+                      </div>
+                      {editArt && <img className="edit-preview" src={editArt} alt="preview" onError={e => e.target.style.display="none"} />}
+                      <div className="edit-actions">
+                        <button className="edit-save" onClick={saveCorrection}>Save</button>
+                        <button className="edit-cancel" onClick={() => setShowEdit(false)}>Cancel</button>
+                      </div>
+                      {editConfirm && <div className="edit-confirm">Saved ✓</div>}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
-              {isLoading && <div className="loading"><div className="spinner" />Picking something...</div>}
-              {error && <div className="error">{error}</div>}
+            {isLoading && <div className="loading" style={{marginBottom:16}}><div className="spinner" />{appState === "recommend" ? "Searching your library..." : "Picking something..."}</div>}
+            {error && <div className="error" style={{width:"100%", marginBottom:16}}>{error}</div>}
 
-              <div className="shuffle-filters-row" ref={dropdownRef}>
-                <div className="shuffle-filter-wrap">
+            {/* Animated home/shuffle/recommend stage */}
+            <div className="home-screen">
+              <div className={`home-question${appState !== "home" ? " hidden" : ""}`}>
+                What are we listening to<span> today?</span>
+              </div>
+
+              <div className="home-btns">
+                <button
+                  className={`home-btn home-btn-shuffle pos-${appState === "home" ? "home" : appState}`}
+                  onClick={appState === "home" ? enterShuffle : randomPick}
+                  disabled={appState === "shuffle" && (!albums.length || isLoading)}
+                >
+                  Shuffle
+                </button>
+
+                <button
+                  className={`home-btn home-btn-recommend pos-${appState === "home" ? "home" : appState}`}
+                  onClick={appState === "home" ? enterRecommend : aiRecommend}
+                  disabled={appState === "recommend" && (!albums.length || isLoading)}
+                >
+                  {appState === "recommend" ? "Recommend" : "Recommend"}
+                </button>
+              </div>
+
+              {/* Filter orbit — appears in shuffle state */}
+              <div className={`filter-orbit${appState === "shuffle" ? " visible" : " hidden"}`} ref={dropdownRef}>
+                <div className="orbit-genre">
                   <button
-                    className={`shuffle-filter-btn${selectedGenres.length ? " has-selection" : ""}`}
+                    className={`orbit-btn${selectedGenres.length ? " has-selection" : ""}`}
                     onClick={() => { setGenreOpen(!genreOpen); setMoodOpen(false); }}
                   >
-                    Genre
-                    {selectedGenres.length > 0 && <span className="dropdown-count">{selectedGenres.length}</span>}
+                    Genre {selectedGenres.length > 0 && <span className="dropdown-count">{selectedGenres.length}</span>}
                   </button>
                   {genreOpen && (
-                    <div className="dropdown-menu" style={{display:"flex"}}>
+                    <div className="dropdown-menu" style={{display:"flex", left:0, top:"calc(100% + 6px)"}}>
                       {GENRES.map(g => (
                         <button key={g} className={`chip${selectedGenres.includes(g) ? " active" : ""}`}
                           onClick={() => toggleFilter(selectedGenres, setSelectedGenres, g)}>{g}</button>
@@ -1459,20 +1665,15 @@ Output format — nothing else:
                   )}
                 </div>
 
-                <button className="btn-shuffle-main" onClick={randomPick} disabled={!albums.length || isLoading} title="Shuffle">
-                  ⇄
-                </button>
-
-                <div className="shuffle-filter-wrap">
+                <div className="orbit-mood">
                   <button
-                    className={`shuffle-filter-btn${selectedMoods.length ? " has-selection" : ""}`}
+                    className={`orbit-btn${selectedMoods.length ? " has-selection" : ""}`}
                     onClick={() => { setMoodOpen(!moodOpen); setGenreOpen(false); }}
                   >
-                    Mood
-                    {selectedMoods.length > 0 && <span className="dropdown-count">{selectedMoods.length}</span>}
+                    Mood {selectedMoods.length > 0 && <span className="dropdown-count">{selectedMoods.length}</span>}
                   </button>
                   {moodOpen && (
-                    <div className="dropdown-menu" style={{display:"flex", right:0, left:"auto"}}>
+                    <div className="dropdown-menu" style={{display:"flex", right:0, left:"auto", top:"calc(100% + 6px)"}}>
                       {MOODS.map(m => (
                         <button key={m} className={`chip${selectedMoods.includes(m) ? " active" : ""}`}
                           onClick={() => toggleFilter(selectedMoods, setSelectedMoods, m)}>{m}</button>
@@ -1481,82 +1682,22 @@ Output format — nothing else:
                   )}
                 </div>
               </div>
-            </div>
-          )}
 
-          {appState === "recommend" && (
-            <div className="recommend-screen fade-in">
-              {currentPick && !isLoading && (
-                <div className="result-card" style={{width:"100%"}}>
-                  <div className="result-art-wrap">
-                    {albumArt
-                      ? <img className="result-art" src={albumArt} alt={displayAlbum || parsed.album} />
-                      : <div className="result-art-placeholder">♫</div>
-                    }
-                    <div className="result-mode-badge">✦ recommended</div>
-                  </div>
-                  <div className="result-body">
-                    {(displayArtist || parsed.artist) && (
-                      <div className="result-artist">{displayArtist || parsed.artist}</div>
-                    )}
-                    <div className="result-album">{displayAlbum || parsed.album}</div>
-                    {explanation && <div className="result-explanation">{explanation}</div>}
-                    <div className="result-actions">
-                      <button className="result-btn accent" onClick={aiRecommend} disabled={isLoading}>Try another</button>
-                      <button className={`result-btn${feedbackGiven ? " muted" : " danger"}`} onClick={reportWrong} disabled={feedbackGiven}>
-                        {feedbackGiven ? "Noted ✓" : "Wrong vibe"}
-                      </button>
-                      <button className="result-btn" onClick={() => { setShowEdit(!showEdit); setEditConfirm(false); }}>
-                        {showEdit ? "Cancel" : "Fix this"}
-                      </button>
-                    </div>
-                    {showEdit && (
-                      <div className="edit-panel">
-                        <div className="edit-field">
-                          <label>Artist</label>
-                          <input className="edit-input" value={editArtist} onChange={e => setEditArtist(e.target.value)} placeholder="Artist name" />
-                        </div>
-                        <div className="edit-field">
-                          <label>Album</label>
-                          <input className="edit-input" value={editAlbum} onChange={e => setEditAlbum(e.target.value)} placeholder="Album title" />
-                        </div>
-                        <div className="edit-field">
-                          <label>Album art URL</label>
-                          <input className="edit-input" value={editArt} onChange={e => setEditArt(e.target.value)} placeholder="Paste image URL..." />
-                        </div>
-                        {editArt && <img className="edit-preview" src={editArt} alt="preview" onError={e => e.target.style.display="none"} />}
-                        <div className="edit-actions">
-                          <button className="edit-save" onClick={saveCorrection}>Save</button>
-                          <button className="edit-cancel" onClick={() => setShowEdit(false)}>Cancel</button>
-                        </div>
-                        {editConfirm && <div className="edit-confirm">Saved ✓</div>}
-                      </div>
-                    )}
-                  </div>
+              {/* Prompt — appears in recommend state */}
+              <div className={`recommend-prompt${appState === "recommend" ? " visible" : " hidden"}`}>
+                <div className="prompt-wrap">
+                  <input className="prompt-input"
+                    placeholder="late night drive, cooking, need energy..."
+                    value={prompt}
+                    onChange={e => setPrompt(e.target.value)}
+                    onKeyDown={e => e.key === "Enter" && aiRecommend()}
+                  />
+                  {prompt && <button className="prompt-clear" onClick={() => setPrompt("")}>×</button>}
                 </div>
-              )}
-
-              {isLoading && <div className="loading"><div className="spinner" />Searching your library...</div>}
-              {error && <div className="error">{error}</div>}
-
-              <div className="prompt-wrap" style={{width:"100%"}}>
-                <input className="prompt-input"
-                  placeholder="late night drive, cooking, need energy..."
-                  value={prompt}
-                  onChange={e => setPrompt(e.target.value)}
-                  onKeyDown={e => e.key === "Enter" && aiRecommend()}
-                  autoFocus
-                />
-                {prompt && <button className="prompt-clear" onClick={() => setPrompt("")}>×</button>}
               </div>
-
-              <button className="btn-recommend-main" onClick={aiRecommend} disabled={!albums.length || isLoading}>
-                Recommend
-              </button>
             </div>
-          )}
 
-          </main>
+          </div>
 
           <div style={{width:"100%",maxWidth:"520px",padding:"0 20px 20px"}}>
             <div className="section">
@@ -1574,13 +1715,8 @@ Output format — nothing else:
                 </button>
               )}
             </div>
-
-
-
-
-
-
           </div>
+
           {showSetup && (
             <div className="setup-backdrop">
               <div className="setup-modal">
@@ -1611,7 +1747,7 @@ Output format — nothing else:
       );
     }
 
-    ReactDOM.createRoot(document.getElementById("root")).render(<Entrain />);
+        ReactDOM.createRoot(document.getElementById("root")).render(<Entrain />);
   </script>
 </body>
 </html>
