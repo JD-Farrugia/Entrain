@@ -1572,11 +1572,11 @@ Output format — nothing else:
             <div className="wordmark">entr<span>ain</span></div>
           </header>
 
-          <div className="content-area" style={{justifyContent: currentPick && !isLoading ? "flex-start" : "center", paddingTop: currentPick && !isLoading ? "20px" : "0"}}>
+          <div className="content-area" style={{justifyContent: currentPick && !isLoading ? "flex-start" : "center", paddingTop: currentPick && !isLoading ? "8px" : "0"}}>
 
             {/* Result card — shown in shuffle and recommend states */}
             {currentPick && !isLoading && appState !== "home" && (
-              <div className="result-card fade-in" style={{width:"100%", marginBottom: 20}}>
+              <div className="result-card fade-in" style={{width:"100%", marginBottom: 12}}>
                 <div className="result-art-wrap">
                   {albumArt
                     ? <img className="result-art" src={albumArt} alt={displayAlbum || parsed.album} />
