@@ -747,7 +747,7 @@
     .result-card {
       position: fixed;
       inset: 0;
-      z-index: 10;
+      z-index: 100;
       animation: fadeIn 0.5s ease forwards;
     }
 
@@ -1798,6 +1798,7 @@ Output format — nothing else:
 
           </div>
 
+          {!(currentPick && !isLoading && appState !== "home") && (
           <div style={{width:"100%",maxWidth:"520px",padding:"0 20px 20px"}}>
             <div className="section">
               <div className="label">Add an album</div>
@@ -1815,6 +1816,7 @@ Output format — nothing else:
               )}
             </div>
           </div>
+          )}
 
           {showSetup && (
             <div className="setup-backdrop">
